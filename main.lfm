@@ -1,0 +1,78 @@
+object MainForm: TMainForm
+  Left = 275
+  Height = 403
+  Top = 135
+  Width = 512
+  AllowDropFiles = True
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'pngdrop'
+  ClientHeight = 383
+  ClientWidth = 512
+  Menu = MainMenu
+  OnDropFiles = FormDropFiles
+  LCLVersion = '1.8.0.6'
+  object Memo: TMemo
+    Left = 0
+    Height = 360
+    Top = 0
+    Width = 512
+    Align = alClient
+    TabOrder = 0
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 360
+    Width = 512
+    Panels = <>
+  end
+  object MainMenu: TMainMenu
+    left = 39
+    top = 39
+    object FilwMenuItem: TMenuItem
+      Caption = '&File'
+      object ClipboardMenuItem: TMenuItem
+        Caption = '&Clipboard'
+        ShortCut = 16470
+        OnClick = ClipboardMenuItemClick
+      end
+      object MenuItem1: TMenuItem
+        Caption = '-'
+      end
+      object QuitMenuItem: TMenuItem
+        Caption = '&Quit'
+        ShortCut = 16472
+        OnClick = QuitMenuItemClick
+      end
+    end
+    object SettingMenuItem: TMenuItem
+      Caption = '&Setting'
+      object ColorsMenuItem: TMenuItem
+        Caption = '&Colors'
+        object Colors256MenuItem: TMenuItem
+          AutoCheck = True
+          Caption = '&256 Colors'
+          Checked = True
+          RadioItem = True
+        end
+        object Colors16MenuItem: TMenuItem
+          AutoCheck = True
+          Caption = '&16 Colors'
+          Enabled = False
+          RadioItem = True
+        end
+      end
+      object DitherMenuItem: TMenuItem
+        AutoCheck = True
+        Caption = 'Dither'
+        Checked = True
+      end
+      object KMeansMenuItem: TMenuItem
+        AutoCheck = True
+        Caption = '&K-Means'
+        Enabled = False
+      end
+    end
+  end
+end
