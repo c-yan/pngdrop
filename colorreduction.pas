@@ -34,7 +34,7 @@ type
 
   TPalette = array of TByteTriple;
 
-function ColorDiff(C1, C2: TByteTriple): integer;
+function ColorDiff(C1, C2: TByteTriple): integer; inline;
 begin
   Result := (C1[0] - C2[0]) * (C1[0] - C2[0]) + (C1[1] - C2[1]) *
     (C1[1] - C2[1]) + (C1[2] - C2[2]) * (C1[2] - C2[2]);
