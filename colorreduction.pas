@@ -81,7 +81,7 @@ var
   I: integer;
   BestError, E: integer;
 begin
-  BestError := 256 * 256 * 3;
+  BestError := High(integer);
   Result := -1;
   for I := 0 to Length(Palette) - 1 do
   begin
