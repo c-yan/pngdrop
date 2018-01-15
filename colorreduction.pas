@@ -98,25 +98,18 @@ procedure MapColor(Src: TBitmap; Dst: TLazIntfImage; Palette: TPalette; Log: TLo
 var
   Y, X: integer;
   SrcRow, DstRow: PByteTripleArray;
-  N: integer;
-  ErrorSum: int64;
 begin
   Log('Map color');
 
-  ErrorSum := 0;
   for Y := 0 to Src.Height - 1 do
   begin
     SrcRow := PByteTripleArray(Src.RawImage.GetLineStart(Y));
     DstRow := Dst.GetDataLineStart(Y);
     for X := 0 to Src.Width - 1 do
     begin
-      N := GetNearestIndex(SrcRow^[X], Palette);
-      DstRow^[X] := Palette[N];
-      ErrorSum := ErrorSum + ColorDiff(SrcRow^[X], Palette[N]);
+      DstRow^[X] := Palette[GetNearestIndex(SrcRow^[X], Palette)];
     end;
   end;
-
-  Log(Format('Average Error: %.3f', [ErrorSum / Src.Width / Src.Height]));
 end;
 
 function Clamp(N: integer): integer; inline;
@@ -136,7 +129,6 @@ var
   C: TByteTriple;
   I, N: integer;
   Diffs: array[0..2] of PIntegerTripleArray;
-  ErrorSum: int64;
 begin
   Log('Map color with dither');
 
@@ -146,7 +138,6 @@ begin
     FillChar(Diffs[I]^, (Src.Width + 2) * SizeOf(TIntegerTriple), 0);
   end;
 
-  ErrorSum := 0;
   for Y := 0 to Src.Height - 1 do
   begin
     SrcRow := PByteTripleArray(Src.RawImage.GetLineStart(Y));
@@ -168,14 +159,33 @@ begin
       begin
         Diffs[1]^[X + 1][I] := C[I] - Palette[N][I];
       end;
-      ErrorSum := ErrorSum + ColorDiff(SrcRow^[X], Palette[N]);
     end;
     Diffs[2] := Diffs[0];
     Diffs[0] := Diffs[1];
     Diffs[1] := Diffs[2];
   end;
+end;
 
-  Log(Format('Average Error: %.3f', [ErrorSum / Src.Width / Src.Height]));
+procedure CalculateAverageError(Src: TBitmap; Dst: TLazIntfImage; Log: TLog);
+var
+  Y, X: integer;
+  SrcRow, DstRow: PByteTripleArray;
+  ErrorSum: int64;
+begin
+  Log('Calculate average error');
+
+  ErrorSum := 0;
+  for Y := 0 to Src.Height - 1 do
+  begin
+    SrcRow := PByteTripleArray(Src.RawImage.GetLineStart(Y));
+    DstRow := Dst.GetDataLineStart(Y);
+    for X := 0 to Src.Width - 1 do
+    begin
+      ErrorSum := ErrorSum + ColorDiff(SrcRow^[X], DstRow^[X]);
+    end;
+  end;
+
+  Log(Format('Average error: %.3f', [ErrorSum / Src.Width / Src.Height]));
 end;
 
 function ReduceColor(Src: TBitmap; Config: TReduceColorConfig;
@@ -198,6 +208,8 @@ begin
     MapColorWithDither(Src, Result, Palette, Log)
   else
     MapColor(Src, Result, Palette, Log);
+
+  CalculateAverageError(Src, Result, Log);
 end;
 
 end.
